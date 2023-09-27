@@ -40,7 +40,7 @@ int find_end(char *start, char *all, int len, int end)
 	{
 		if (all[i] == '<' && all[i + 1] && all[i + 1] == '/')
 		{
-			if (strncmp(start, &all[i+1], ft_strlen(start) - 2))
+			if (strncmp(start, &all[i+1], strlen(start) - 1))
 				return(i);
 		}
 		i++;
@@ -52,9 +52,10 @@ int	check_html(char *str)
 {
 	int i;
 	char	*start;
-	char	*end;
+	int		end;
 
 	i = 0;
+	end = strlen(str);
 	while(str[i])
 	{	
 		if (str[i] == '<' && str[i + 1] && str[i + 1] != '/')
@@ -62,7 +63,10 @@ int	check_html(char *str)
 			int len = ft_strlen(&str[i + 1]) + 1;
 			start = onestr(&str[i],len);
 			i += len;
-			if 
+			end = find_end(start, &str[i], len, end);
+			if (end = -1)
+				return (-1);
+			//find where to start and end next time;
 		}
 		else
 			i++;
