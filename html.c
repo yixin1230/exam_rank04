@@ -1,5 +1,8 @@
 
 #include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 int ft_strlen(char *str)
 {
@@ -40,8 +43,8 @@ int find_end(char *start, char *all, int len, int end)
 	{
 		if (all[i] == '<' && all[i + 1] && all[i + 1] == '/')
 		{
-			if (strncmp(start, &all[i+1], strlen(start) - 1))
-				return(i);
+			if (strncmp(&start[1], &all[i + 2], len - 1) == 0)
+				return(i+len);
 		}
 		i++;
 	}
@@ -51,27 +54,48 @@ int find_end(char *start, char *all, int len, int end)
 int	check_html(char *str)
 {
 	int i;
-	char	*start;
+	char	*str_start;
+	char	*str_end;
 	int		end;
+	int		start;
+	int		lang;
 
 	i = 0;
+	start = 0;
 	end = strlen(str);
+	lang = 0;
 	while(str[i])
 	{	
+		
 		if (str[i] == '<' && str[i + 1] && str[i + 1] != '/')
 		{
-			int len = ft_strlen(&str[i + 1]) + 1;
-			start = onestr(&str[i],len);
-			i += len;
-			end = find_end(start, &str[i], len, end);
-			if (end = -1)
+			int len = ft_strlen(&str[i + 1]) + 2;
+			str_start = onestr(&str[i],len);
+			printf("start:%s\n",str_start);
+			i = len + i;
+			printf("i:%i\n",i);
+			end = find_end(str_start, &str[i], len, end);
+			if (i + end > lang)
+				lang = i + end;
+			printf("lang:%i,lenstr:%li\n",lang, strlen(str));
+			printf("end:%i\n",end);
+			if (end == -1)
 				return (-1);
-			//find where to start and end next time;
+			else if (end == i)
+			{
+				printf("end:%s\n",&str[end+1]);
+				i = lang + 1;
+				end = strlen(str);
+			}
 		}
 		else
 			i++;
 	}
-	return (0)
+	if (lang + 1 < strlen(str))
+	{
+		return(-1);
+	}
+	return (0);
 }
 
 int main(int argc, char **argv)
@@ -83,5 +107,5 @@ int main(int argc, char **argv)
 	}
 	else
 		write(1, "OK\n", 3);
-	return (0)
+	return (0);
 }
