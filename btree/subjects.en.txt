@@ -1,0 +1,25 @@
+Assignment name  : binary_insert
+Expected files   : binary_insert.c
+Allowed functions: malloc
+--------------------------------------------------------------------
+
+Implement a function that insets a new node with a givenvalue into 
+a binary search tree.
+
+The function should be declared as follows:
+t_btree* insert_binary_tree(t_btree *root, int value);
+
+You have to use the ft_btree.h file which will ONLY contain:
+typedef struct s_btree
+{
+    struct s_btree  *left;
+    struct s_btree  *right;
+    int             *val;
+    
+}               t_btree;
+
+If the root node is NULL return the new node as root.
+Values already in the tree should be ignored.
+Values bigger than the root should be insert in the right subtree.
+Values smaller than the root should be insert in the left subtree.
+Values will always be inserted at the End of a brach.
