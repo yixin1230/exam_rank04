@@ -4,78 +4,123 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
-char *check_close(char *str)
+//send str form second char return the lenth 'afsd>', if not close return -1
+int closed_html(char *str)
 {
-	int i = 1;
+	int i = 0;
 	while (str[i])
 	{
 		if (str[i] == '<')
-			return "2";
+			return -1;
 		else if (str[i] == '>')
-			return (&str[i]);
+		{
+			if (i == 0)
+				return -1;
+			else 
+				return i;
+		}
 		i++;
 	}
-	return "1";
+	return -1;
 }
 
-char ft_strlen(char *str)
+int closed_br(char *str)
 {
 	int i = 0;
+	int end = 0;
+	int start = 0;
 	while (str[i])
 	{
+		if (str[i] == '<')
+			end++;
 		if (str[i] == '>')
-			return i;
+			start++;
 		i++;
 	}
-	return i;
-}
-int check_match(char *open, char *close)
-{
-	int i = 0;
-	printf("open: %s,close :%s\n",open, close);
-	if ((check_close(open) != "2" && check_close(open) != "1" ) && check_close(close) != "1")
-	{
-		int len = ft_strlen(open);
-		printf("len:%i\n",len);
-		printf("close :%s\n",close - len+ 1);
-		if (strncmp(&open[1], close - len, len) == 0)
-			return 1;
-	}
-	return 0;
+	if (end == start)
+		return 1;
+	return -1;
 }
 
-char	*check_html(char *str)
+int	check_html(char *str)
 {
-	while (*str)
+	char tags[200][200];
+	int i = 0;
+	int j = -1;
+	int nb_end = 0;
+	int nb_start = 0;
+	if (!str)
+		return -1;
+	if (closed_br(str)< 0)
+		return -3;
+	while (str[i])
 	{
-		if (*str == '<' && *(str + 1) == '/')
+		if (str[i] == '<')
 		{
-			if (check_close(str) != "2" || check_close(str) != "1")
-				return (check_close(str));
+			if (str[i+1] == '/')//check if ending tag
+			{
+				i += 2;
+				nb_start++;
+				int endlen = closed_html(&str[i]);
+				if (endlen == -1)
+					return -2;
+				//printf("j:%i, %s vs %s\n",j, tags[j], &str[i]);
+				if (!strncmp(tags[j],&str[i],endlen))
+				{
+					j--;
+					//printf("j:%i, endlen: %i, tags[j]:%s\n",j, endlen,tags[j]);
+				}
+				if (j < -1)
+					return(-3);
+				i=i+endlen;
+				//printf("end:i:%i\n",i);
+			}
+			else //check if starting tag
+			{
+				i++;
+				if (!strncmp("img",&str[i], 3))
+				{
+					int imglen = closed_html(&str[i]);
+					if (imglen == -1)
+						return -2;
+					i=i+imglen+1;
+				}
+				else
+				{
+					j++;
+					nb_end++;
+					int startlen = closed_html(&str[i]);
+					if (startlen == -1)
+						return -2;
+					strncpy(tags[j],&str[i],startlen);
+					//printf("startlen: %i, tags[j]:%s\n",startlen ,tags[j]);
+					i=i+startlen+1;
+					//printf("satrt: i:%i\n",i);
+				}
+			}
 		}
-		else if (*str == '<' && *(str + 1) != '/')
-		{
-			if (strncmp(str, "<img", 4)==0 && (check_close(str) != "2" || check_close(str) != "1"))
-				str = check_close(str);
-			else if (check_match(str, check_html(str + 1)))
-				str = check_html(str + 1);
-			else
-				return "2";	
-		}
-		str++;
+		else
+			i++;
 	}
-	return "1";
+	if (nb_end != nb_start)
+		return -5;
+	return (j);
 }
 
 int main(int argc, char **argv)
 {
-	if (argc != 2 || check_html(argv[1]) != "1")
+	if (argc != 2)
 	{
 		write(1, "KO\n", 3);
 		return (1);
 	}
-	else
+	int i = check_html(argv[1]);
+	//printf("check_html :%i\n",i);
+	if (i == -1)
+	{
 		write(1, "OK\n", 3);
-	return (0);
+		return (0);
+	}
+	write(1, "KO\n", 3);
+	return (1);
 }

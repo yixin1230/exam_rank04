@@ -20,12 +20,8 @@ int ft_strlen(char *html)
 */
 void process_opening_tag(char *opening_tag, char tags[][MAX_TAG_LENGTH], int *top)
 {
-	// fprintf(stderr, "%d\n", *top);
-
 	/* Copy opening tag to tags in the corresponding tag level */
 	strncpy(tags[++(*top)], opening_tag, MAX_TAG_LENGTH);
-
-	// fprintf(stderr, "%d\n", *top);
 }
 
 bool is_self_closing_tag(char *tag)
@@ -39,9 +35,6 @@ bool is_self_closing_tag(char *tag)
 
 bool is_closed(char *closing_tag, char *tag)
 {
-	// fprintf(stderr, "closing_tag: %s\n", closing_tag);
-	// fprintf(stderr, "tag: %s\n", tag);
-
 	/* Compare current closing tag with the corresponding tag*/
 	return (strncmp(tag, closing_tag, MAX_TAG_LENGTH) == 0);
 }
@@ -51,8 +44,6 @@ bool is_closed(char *closing_tag, char *tag)
 */
 bool process_closing_tag(char *closing_tag, char tag[][MAX_TAG_LENGTH], int *top)
 {
-	// fprintf(stderr, "%d\n", *top);
-
 	/* Check if missing opening/closing tag error */
 	if ((*top) < 0 || !is_closed(closing_tag, tag[*top]))
 	{
@@ -62,9 +53,6 @@ bool process_closing_tag(char *closing_tag, char tag[][MAX_TAG_LENGTH], int *top
 
 	/* Decrement top */
 	(*top)--;
-
-	// fprintf(stderr, "%d\n", *top);
-	
 	return (true);
 }
 
